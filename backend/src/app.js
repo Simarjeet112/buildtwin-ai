@@ -27,11 +27,15 @@ const app = express();
 /* GLOBAL MIDDLEWARE */
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost',
+    'https://buildtwin-ai-1.onrender.com'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-}));
+}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
