@@ -1,10 +1,18 @@
-const { Resend } = require("resend")
+const nodemailer = require("nodemailer")
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+})
 
 exports.sendOTP = async (email, otp) => {
-  await resend.emails.send({
-    from: "BuildTwin AI <onboarding@resend.dev>",
+  await transporter.sendMail({
+    from: `"BuildTwin AI" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Your BuildTwin AI Verification Code",
     html: `

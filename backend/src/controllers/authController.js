@@ -2,12 +2,10 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const User = require("../models/User")
 const asyncHandler = require("../utils/asyncHandler")
+const { sendOTP } = require("../services/emailService")
 
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 
-/*
-SIGNUP - sends OTP, does not log in yet
-*/
 exports.signup = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body
 
@@ -30,15 +28,11 @@ exports.signup = asyncHandler(async (req, res) => {
     await User.create({ name, email, password: hashedPassword, otp, otpExpiry, isVerified: false })
   }
 
-  // TODO: send OTP via email
-  console.log(`OTP for ${email}: ${otp}`)
+  await sendOTP(email, otp)
 
   res.status(201).json({ message: "OTP sent to your email", email })
 })
 
-/*
-VERIFY OTP - verifies and logs in
-*/
 exports.verifyOTP = asyncHandler(async (req, res) => {
   const { email, otp } = req.body
 
@@ -58,9 +52,6 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
   res.json({ message: "Email verified!", token, user: { name: user.name, email: user.email } })
 })
 
-/*
-RESEND OTP
-*/
 exports.resendOTP = asyncHandler(async (req, res) => {
   const { email } = req.body
 
@@ -72,13 +63,10 @@ exports.resendOTP = asyncHandler(async (req, res) => {
   user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
   await user.save()
 
-  console.log(`OTP for ${email}: ${otp}`)
+  await sendOTP(email, otp)
   res.json({ message: "OTP resent" })
 })
 
-/*
-LOGIN
-*/
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body
