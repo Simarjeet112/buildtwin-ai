@@ -25,7 +25,7 @@ export default function Signup() {
   }
 
   const signupWithGoogle = () => {
-    window.location.href = "http://localhost:5000/api/v1/auth/google"
+    window.location.href = "https://buildtwin-ai.onrender.com/api/v1/auth/google"
   }
 
   return (
